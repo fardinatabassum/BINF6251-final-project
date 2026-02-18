@@ -1,7 +1,6 @@
-# BINF6251 Final Project
+## BINF6251 Final Project
 
-## Project Title
-Probabilistic Identification of CpG Islands in the Human Genome using Hidden Markov Models
+# Probabilistic Identification of CpG Islands in the Human Genome using Hidden Markov Models
 
 ## Research Question
 The research question for my final project is, can a first-order Hidden Markov Model be used to accurately identify CpG island boundaries in human promoter regions by differentiating between island and background genomic states?
@@ -44,21 +43,21 @@ This data will be a small synthetic DNA sequence. This sequence will be mostly b
 
 ### Data-related issues:
 
-Large sections of the genomic data in Chromosome 22 are not yet fully sequenced, so they are represented by the character "N" in FASTA files. If the HMM tries to produce this character from an Island or Background state without a predefined probability, the script will crash or produce biased results.
+* Large sections of the genomic data in Chromosome 22 are not yet fully sequenced, so they are represented by the character "N" in FASTA files. If the HMM tries to produce this character from an Island or Background state without a predefined probability, the script will crash or produce biased results.
   
-We can mitigate this by including a data cleaning step in our file parsing script to look for N characters and split the sequences at these gaps. That way, only contiguous sequences will be processed, which can then be merged.
+* We can mitigate this by including a data cleaning step in our file parsing script to look for N characters and split the sequences at these gaps. That way, only contiguous sequences will be processed, which can then be merged.
 
 ### Algorithmic issues:
 
-HMM requires multiplying long chains of probabilities (transition x emission) as it moves across a sequence. Chromosome 22 is approximately 51 million base pairs. These probabilities will become very small, dropping below the floating-point precision of Python and resulting it to be rounded to zero.
+* HMM requires multiplying long chains of probabilities (transition x emission) as it moves across a sequence. Chromosome 22 is approximately 51 million base pairs. These probabilities will become very small, dropping below the floating-point precision of Python and resulting it to be rounded to zero.
 
-We can mitigate this by implementing the algorithm with a log-space transformation. Logarithms turn multiplication into addition, thus keeping the numerical stability.
+* We can mitigate this by implementing the algorithm with a log-space transformation. Logarithms turn multiplication into addition, thus keeping the numerical stability.
 
-### Evaluation issues 
+### Evaluation issues: 
 
-CpG islands are relatively rare in the human genome. If the model incorrectly predicts Background state for the entire chromosome, a standard accuracy metric would still report a high success, which is not biologically correct.
+* CpG islands are relatively rare in the human genome. If the model incorrectly predicts Background state for the entire chromosome, a standard accuracy metric would still report a high success, which is not biologically correct.
 
-We can mitigate this by using sensitivity and specificity to evaluate performance. I will also generate a Confusion Matrix to specifically track how many true islands were missed (false negatives) versus how many Islands were falsely identified in the background (false positives).
+* We can mitigate this by using sensitivity and specificity to evaluate performance. I will also generate a Confusion Matrix to specifically track how many true islands were missed (false negatives) versus how many Islands were falsely identified in the background (false positives).
 
 ## Planned Repository Structure (Initial Sketch)
 ```
