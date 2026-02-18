@@ -23,7 +23,7 @@ I will be using the human genomic sequence data, specifically focusing on Chromo
 Licensing or access considerations: Public domain is being used, so no special licenses or permissions are required for access
 
 ### Prototype data:
-This data will be a small synthetic DNA sequence. This sequence will be mostly background, containing low GC content with a region in the middle containing a high frequency of 'C' and 'G' nucleotides. This allows me to control and know where the hidden state is, thus allowing me to verify the HMM logic. I can check for the transition and emission probabilities to see if they correctly identify the transition from background to island before I move to a much larger dataset of the actual Chromosome 22. The prototype relates to the realistic dataset as a controlled benchmark. It mimics the statistical properties of human genomic DNA such as CG suppression in the background and high density in the islands.
+This data will be a small synthetic DNA sequence. This sequence will be mostly background, containing low GC content with a region in the middle containing a high frequency of C and G nucleotides. This allows me to control and know where the hidden state is, thus allowing me to verify the HMM logic. I can check for the transition and emission probabilities to see if they correctly identify the transition from background to island before I move to a much larger dataset of the actual Chromosome 22. The prototype relates to the realistic dataset as a controlled benchmark. It mimics the statistical properties of human genomic DNA, such as CG suppression in the background and high density in the islands.
 
 ## Success Criteria
 1. Define what “success” looks like for your project:
@@ -40,18 +40,20 @@ This data will be a small synthetic DNA sequence. This sequence will be mostly b
     2. Outline a strategy for detecting and mitigating it (even if only partially).
        
 ## Planned Repository Structure (Initial Sketch)
+```
 / BINF6251-final-project
 ├── data/
-│   ├── hg38_chr22.fa                # Chromosome 22 FASTA from UCSC
-│   ├── ucsc_cpg_islands.bed         # CpG island BED file
-│   └── prototype_genome.fa          # Synthetic sequence
-├── hmm.py                           # HMM and Viterbi implementation
-├── data_readers.py                  # FASTA/BED parsing and cleaning
-├── evaluate.py                      # Comparison logic to calculate sensitivity and validate
-├── .gitignore  
-├── LICENSE                          
-├── PROPOSAL.md                      # Project proposal
-└── README.md                        # Project overview and run instructions
+│   ├── hg38_chr22.fa            # Chromosome 22 FASTA from UCSC
+│   ├── ucsc_cpg_islands.bed     # CpG island BED file
+│   └── prototype_genome.fa      # Synthetic sequence
+├── hmm.py                       # HMM and Viterbi implementation
+├── data_readers.py              # FASTA/BED parsing and cleaning
+├── evaluate.py                  # Comparison logic and validation
+├── .gitignore                   # Excludes large data files
+├── LICENSE                      # Project licensing
+├── PROPOSAL.md                  # Project proposal
+└── README.md                    # Project overview
+```
 
 ## Generative AI Disclosure (If Used)
 Claude was used to understand the different algorithms and biological contexts. 
