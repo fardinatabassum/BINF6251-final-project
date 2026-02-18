@@ -1,5 +1,6 @@
 ## 1. Project Title
-* A concise project title.
+A Probabilistic Identification of CpG Islands in the Human Genome using Hidden Markov Models
+
 ## 2. Research Question
 1. A concise and succinct description of the question you want to explore.
 2. Why this research question matters and how the results may be innovative.
