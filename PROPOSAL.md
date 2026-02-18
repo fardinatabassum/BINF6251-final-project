@@ -38,6 +38,20 @@ This data will be a small synthetic DNA sequence. This sequence will be mostly b
 2. For each pitfall:
     1. Describe why it is a realistic concern in your chosen context.
     2. Outline a strategy for detecting and mitigating it (even if only partially).
-## 6. Planned Repository Structure (Initial Sketch)
-* Provide an initial sketch of how you expect to structure the repository
-## 7. Generative AI Disclosure (If Used)
+       
+## Planned Repository Structure (Initial Sketch)
+/ BINF6251-final-project
+├── data/
+│   ├── hg38_chr22.fa                # Chromosome 22 FASTA from UCSC
+│   ├── ucsc_cpg_islands.bed         # CpG island BED file
+│   └── prototype_genome.fa          # Synthetic sequence
+├── hmm.py                           # HMM and Viterbi implementation
+├── data_readers.py                  # FASTA/BED parsing and cleaning
+├── evaluate.py                      # Comparison logic to calculate sensitivity and validate
+├── .gitignore  
+├── LICENSE                          
+├── PROPOSAL.md                      # Project proposal
+└── README.md                        # Project overview and run instructions
+
+## Generative AI Disclosure (If Used)
+Claude was used to understand the different algorithms and biological contexts. 
