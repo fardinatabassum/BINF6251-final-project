@@ -1,16 +1,14 @@
 # Data Directory
-
 This directory contains the genomic sequences and reference standards required for the Hidden Markov Model (HMM) validation and final analysis.
 
 ## 1. Prototype Data
-* **`prototype_genome.fa`**: A 780bp synthetic FASTA sequence used to validate the Viterbi logic.
+* `prototype_genome.fa`: A 780bp synthetic FASTA sequence used to validate the Viterbi logic.
   * Format: FASTA
   * Length: 780bp
   * Composition: 
       * 0-119bp: Background noise (AT-rich).
       * 120-420bp: High-GC "Island" simulating a promoter region, containing a 50bp 'N' assembly gap.
       * 421-780bp: Terminal background noise to test state-switching and termination.
-
 #### Note: A Python script for automated prototype sequence generater is planned for a future update to enhance reproducibility.
 
 ## 2. Documented Prototype Run
@@ -30,7 +28,6 @@ python src/viterbi_hmm.py
 ```
 
 ### Results
-
 * **Output:** predictions.bed
 * **Location and Use:** in the root directory. Import it into the IGV/UCSC Genome Browser.
 * **Expected bed file content:**
