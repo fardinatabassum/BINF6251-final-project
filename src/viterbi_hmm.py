@@ -60,10 +60,12 @@ def viterbi_decode(sequence, states, start_p, trans_p, emiss_p, global_offset=0)
     # Path Reconstruction (Backtracking)
     # Identify the best ending state and follow the backpointers (B) from right to left
     best_final_state = np.argmax(V[:, L - 1])
-    path = [best_final_state]
+    path = np.zeros(L, dtype=int)
+    path[L - 1] = best_final_state
 
-    for i in range(L - 1, 0, -1):
-        path.insert(0, B[path[0], i])
+    for i in range(L - 2, -1, -1):
+        # Looks at the backpointer for the state we just found at index i+1
+        path[i] = B[path[i + 1], i + 1]
 
     # Post-Processing & Biological Filtering
     # Identifies contiguous segments of State 1 and applies a 200bp length threshold.
