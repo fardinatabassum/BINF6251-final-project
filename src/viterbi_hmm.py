@@ -1,7 +1,8 @@
 import numpy as np
 import math
-from data_reader import read_fasta
-from utils import save_as_bed
+import argparse
+from src.data_reader import read_fasta, get_header
+from src.utils import save_as_bed
 
 
 def viterbi_decode(sequence, states, start_p, trans_p, emiss_p, global_offset=0):
@@ -67,72 +68,72 @@ def viterbi_decode(sequence, states, start_p, trans_p, emiss_p, global_offset=0)
         # Looks at the backpointer for the state we just found at index i+1
         path[i] = B[path[i + 1], i + 1]
 
-    # Post-Processing & Biological Filtering
-    # Identifies contiguous segments of State 1 and applies a 200bp length threshold.
-    islands = []
-    current_start = None
+    return path
 
-    for idx, state in enumerate(path):
-        if state == 1 and current_start is None:
-            current_start = idx
-        elif state == 0 and current_start is not None:
-            length = idx - current_start
-            # Threshold to only keep islands >= 200bp
-            if length >= 200:
-                islands.append((current_start + global_offset, idx + global_offset))
-            current_start = None
-
-    # Ensure islands that reach the end of the sequence are recorded
-    if current_start is not None:
-        length = L - current_start
-        if length >= 200:
-            islands.append((current_start + global_offset, L + global_offset))
-
-    return islands
-
-
-if __name__ == "__main__":
+def main():
     """
-    Execution block for Prototype Validation.
-    Uses calibrated probabilities to test sensitivity on synthetic and local FASTA data.
+    CLI execution block.
+    Allows users to specify input FASTA and output BED files via the terminal.
     """
-    # Model calibration: States 0 (Background) and 1 (CpG Island)
+    parser = argparse.ArgumentParser(description="HMM-based CpG Island Detector for Genomic Sequences")
+    parser.add_argument("-i", "--input", required=True, help="Path to the input FASTA file")
+    parser.add_argument("-o", "--output", default="predictions.bed", help="Path to save the output BED file")
+    args = parser.parse_args()
+
+    # Model calibration States 0 (Background) and 1 (CpG Island)
     states = [0, 1]
     start_p = [math.log(0.5), math.log(0.5)]
 
-    # Transition matrix: Adjusted to favor state persistence (stickiness)
+    # Transition matrix adjusted to favor state persistence
     trans_p = {
-        0: {0: math.log(0.95), 1: math.log(0.05)},
-        1: {0: math.log(0.05), 1: math.log(0.95)}
+        0: {0: math.log(0.9999), 1: math.log(0.0001)},
+        1: {0: math.log(0.001), 1: math.log(0.999)}
     }
 
-    # Emission matrix: Weighted heavily for G/C content in the Island state
+    # Emission matrix weighted heavily for G/C content in the Island state
     emiss_p = {
         0: {'A': math.log(0.25), 'C': math.log(0.25), 'G': math.log(0.25), 'T': math.log(0.25)},
-        1: {'A': math.log(0.01), 'C': math.log(0.49), 'G': math.log(0.49), 'T': math.log(0.01)}
+        1: {'A': math.log(0.10), 'C': math.log(0.40), 'G': math.log(0.40), 'T': math.log(0.10)}
     }
 
-    # Prototype Execution
-    file_path = "data/prototype_genome.fa"
-    print(f"--- Loading data from {file_path} ---")
-
     try:
-        sequence = read_fasta(file_path)
-        print(f"Successfully loaded {len(sequence)} base pairs.")
+        print(f"--- Loading data from {args.input} ---")
+        sequence = read_fasta(args.input)
+        chrom_name = get_header(args.input)
+        print(f"Successfully loaded {len(sequence)} base pairs from {chrom_name}.")
 
         print("Running Viterbi decoding")
-        results = viterbi_decode(sequence, states, start_p, trans_p, emiss_p)
+        # results = viterbi_decode(sequence, states, start_p, trans_p, emiss_p)
+        path = viterbi_decode(sequence, states, start_p, trans_p, emiss_p)
 
-        if results:
-            print(f"Success! Found {len(results)} island(s).")
-            print(f"Genomic Coordinates: {results}")
+        # Extract islands and apply the 200bp biological filter
+        islands, current_start = [], None
+        for idx, state in enumerate(path):
+            if state == 1 and current_start is None:
+                current_start = idx
+            elif state == 0 and current_start is not None:
+                if (idx - current_start) >= 200:
+                    islands.append((current_start, idx))
+                current_start = None
 
-            # Save to the root directory for browser compatibility 
-            save_as_bed(results, "predictions.bed")
+        # Capture islands that reach the end of the sequence
+        if current_start is not None and (len(path) - current_start) >= 200:
+            islands.append((current_start, len(path)))
+
+        # Output results
+        if islands:
+            print(f"Successfully detected {len(islands)} CpG islands.")
+            # Save to the root directory
+            save_as_bed(islands, args.output, chrom=chrom_name)
         else:
-            print("No islands detected. Check if sequence is >200bp or if GC-content is sufficient.")
+            print("No islands detected. Check if sequence is >200bp")
 
     except FileNotFoundError:
-        print(f"Error: {file_path} not found. Verify the file path relative to the root directory.")
+        print(f"Error: {args.input} not found. Verify the file path relative to the root directory.")
+
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+
+
+if __name__ == "__main__":
+    main()
